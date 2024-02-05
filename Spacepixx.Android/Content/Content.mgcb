@@ -298,18 +298,6 @@
 /processorParam:TextureFormat=Color
 /build:Textures/Keyboard.png
 
-#begin Textures/MenuSheet - Copy.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Textures/MenuSheet - Copy.png
-
 #begin Textures/MenuSheet.png
 /importer:TextureImporter
 /processor:TextureProcessor

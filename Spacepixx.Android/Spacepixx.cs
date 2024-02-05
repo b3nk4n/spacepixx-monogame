@@ -160,7 +160,7 @@ public class Spacepixx : Game, IBackButtonPressedCallback
         // physical resolution of the screen, using a transformation matrix
         // of the SpriteBatch, we need to change the display for the touch
         // panel the same way
-        TouchPanel.DisplayOrientation = DisplayOrientation.Portrait;
+        TouchPanel.DisplayOrientation = DisplayOrientation.LandscapeLeft;
         TouchPanel.DisplayHeight = HEIGHT;
         TouchPanel.DisplayWidth = WIDTH;
         TouchPanel.EnabledGestures = GestureType.Tap;
