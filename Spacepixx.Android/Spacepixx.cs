@@ -254,7 +254,7 @@ public class Spacepixx : Game, IBackButtonPressedCallback
                                                           HEIGHT / 2),
                                                           pericles16);
 
-        hud = Hud.GetInstance(GraphicsDevice.Viewport.Bounds,
+        hud = Hud.GetInstance(new Rectangle(0, 0, WIDTH, HEIGHT),
                               spriteSheet,
                               pericles16,
                               0,
@@ -284,8 +284,7 @@ public class Spacepixx : Game, IBackButtonPressedCallback
         instructionManager = new InstructionManager(spriteSheet,
                                                     pericles18,
                                                     new Rectangle(0, 0,
-                                                                  GraphicsDevice.Viewport.Width,
-                                                                  GraphicsDevice.Viewport.Height),
+                                                                  WIDTH, HEIGHT),
                                                     asteroidManager,
                                                     playerManager,
                                                     enemyManager,
