@@ -44,6 +44,11 @@ namespace Spacepixx
         private readonly Rectangle vibrationDestination = new Rectangle(250, 335,
                                                                         300, 50);
 
+        private readonly Rectangle cancelSource = new Rectangle(0, 750,
+                                                                300, 50);
+        private readonly Rectangle cancelDestination = new Rectangle(350, 370,
+                                                                     300, 50);
+
         private NeutralPositionValues neutralPositionValue = NeutralPositionValues.Angle20;
 
         private float opacity = 0.0f;
@@ -57,6 +62,7 @@ namespace Spacepixx
         private const string MusicAction = "Music";
         private const string SfxAction = "SFX";
         private const string VibrationAction = "Vibration";
+        private const string CancelAction = "Cancel";
 
         private const string ON = "ON";
         private const string OFF = "OFF";
@@ -70,6 +76,7 @@ namespace Spacepixx
         private const int ValuePositionX = 550;
 
         private bool isInvalidated = false;
+        private bool cancelClicked = false;
 
         #endregion
 
@@ -95,6 +102,9 @@ namespace Spacepixx
             GameInput.AddTouchGestureInput(VibrationAction,
                                            GestureType.Tap,
                                            vibrationDestination);
+            GameInput.AddTouchGestureInput(CancelAction,
+                                           GestureType.Tap,
+                                           cancelDestination);
         }
 
         public void Initialize(Texture2D tex, SpriteFont f)
@@ -134,6 +144,11 @@ namespace Spacepixx
             drawMusic(spriteBatch);
             drawSfx(spriteBatch);
             drawVibration(spriteBatch);
+
+            spriteBatch.Draw(texture,
+                             cancelDestination,
+                             cancelSource,
+                             Color.White * opacity);
         }
 
         private void handleTouchInputs()
@@ -142,13 +157,17 @@ namespace Spacepixx
             {
                 toggleMusic();
             }
-            if (GameInput.IsPressed(SfxAction))
+            else if (GameInput.IsPressed(SfxAction))
             {
                 toggleSfx();
             }
-            if (GameInput.IsPressed(VibrationAction))
+            else if (GameInput.IsPressed(VibrationAction))
             {
                 toggleVibration();
+            }
+            else if (GameInput.IsPressed(CancelAction))
+            {
+                this.cancelClicked = true;
             }
         }
 
@@ -567,8 +586,17 @@ namespace Spacepixx
                 if (isActive == false)
                 {
                     this.opacity = OpacityMin;
+                    this.cancelClicked = false;
                     Save();
                 }
+            }
+        }
+
+        public bool CancelClicked
+        {
+            get
+            {
+                return this.cancelClicked;
             }
         }
 
