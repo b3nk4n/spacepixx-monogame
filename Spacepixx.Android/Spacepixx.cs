@@ -12,6 +12,18 @@ namespace Spacepixx;
 
 public class Spacepixx : Game
 {
+    /*
+     * The game's fixed width and heigth of the screen.
+     * Do NOT change this number, because other related code uses hard
+     * coded values similar to this one and assumes that this is the screen
+     * dimension. This value values was fixed in Windows Phone,
+     * but there are very different screen out there in Android.
+     */
+    const int WIDTH = 800;
+    const int HEIGHT = 480;
+    Matrix screenScaleMatrix;
+    Vector2 screenScaleVector;
+
     GraphicsDeviceManager graphics;
     SpriteBatch spriteBatch;
 
@@ -129,13 +141,26 @@ public class Spacepixx : Game
     protected override void Initialize()
     {
         graphics.IsFullScreen = true;
-        graphics.PreferredBackBufferHeight = 480;
-        graphics.PreferredBackBufferWidth = 800;
+        graphics.PreferredBackBufferHeight = HEIGHT;
+        graphics.PreferredBackBufferWidth = WIDTH;
         graphics.SupportedOrientations = DisplayOrientation.LandscapeLeft;
 
         // Aplly the gfx changes
         graphics.ApplyChanges();
 
+        // calculate scaling matrix/vector to fit everything to the assumed screen bounds
+        var bw = GraphicsDevice.PresentationParameters.BackBufferWidth;
+        var bh = GraphicsDevice.PresentationParameters.BackBufferHeight;
+        screenScaleVector = new Vector2((float)bw / WIDTH, (float)bh / HEIGHT);
+        screenScaleMatrix = Matrix.Identity * Matrix.CreateScale(screenScaleVector.X, screenScaleVector.Y, 0f);
+
+        // Because we are using a different virtual scale compared to the
+        // physical resolution of the screen, using a transformation matrix
+        // of the SpriteBatch, we need to change the display for the touch
+        // panel the same way
+        TouchPanel.DisplayOrientation = DisplayOrientation.Portrait;
+        TouchPanel.DisplayHeight = HEIGHT;
+        TouchPanel.DisplayWidth = WIDTH;
         TouchPanel.EnabledGestures = GestureType.Tap;
 
         loadVersion();
@@ -156,20 +181,20 @@ public class Spacepixx : Game
         menuSheet = Content.Load<Texture2D>(@"Textures\MenuSheet");
         powerUpSheet = Content.Load<Texture2D>(@"Textures\PowerUpSheet");
 
-        starFieldManager1 = new StarFieldManager(this.GraphicsDevice.Viewport.Width,
-                                                this.GraphicsDevice.Viewport.Height,
+        starFieldManager1 = new StarFieldManager(WIDTH,
+                                                HEIGHT,
                                                 100,
                                                 new Vector2(0, 20.0f),
                                                 spriteSheet,
                                                 new Rectangle(0, 350, 1, 1));
-        starFieldManager2 = new StarFieldManager(this.GraphicsDevice.Viewport.Width,
-                                                this.GraphicsDevice.Viewport.Height,
+        starFieldManager2 = new StarFieldManager(WIDTH,
+                                                HEIGHT,
                                                 70,
                                                 new Vector2(0, 40.0f),
                                                 spriteSheet,
                                                 new Rectangle(0, 350, 2, 2));
-        starFieldManager3 = new StarFieldManager(this.GraphicsDevice.Viewport.Width,
-                                                this.GraphicsDevice.Viewport.Height,
+        starFieldManager3 = new StarFieldManager(WIDTH,
+                                                HEIGHT,
                                                 30,
                                                 new Vector2(0, 60.0f),
                                                 spriteSheet,
@@ -179,29 +204,29 @@ public class Spacepixx : Game
                                               spriteSheet,
                                               new Rectangle(0, 0, 50, 50),
                                               20,
-                                              this.GraphicsDevice.Viewport.Width,
-                                              this.GraphicsDevice.Viewport.Height);
+                                              WIDTH,
+                                              HEIGHT);
 
         playerManager = new PlayerManager(spriteSheet,
                                           new Rectangle(0, 150, 50, 50),
                                           6,
                                           new Rectangle(0, 0,
-                                                        this.GraphicsDevice.Viewport.Width,
-                                                        this.GraphicsDevice.Viewport.Height),
+                                                        WIDTH,
+                                                        HEIGHT),
                                           playerStartLocation,
                                           gameInput);
 
         enemyManager = new EnemyManager(spriteSheet,
                                         playerManager,
                                         new Rectangle(0, 0,
-                                                      this.GraphicsDevice.Viewport.Width,
-                                                      this.GraphicsDevice.Viewport.Height));
+                                                      WIDTH,
+                                                      HEIGHT));
 
         bossManager = new BossManager(spriteSheet,
                                       playerManager,
                                       new Rectangle(0, 0,
-                                                    this.GraphicsDevice.Viewport.Width,
-                                                    this.GraphicsDevice.Viewport.Height));
+                                                    WIDTH,
+                                                    HEIGHT));
         Boss.Player = playerManager;
 
         EffectManager.Initialize(spriteSheet,
@@ -223,8 +248,8 @@ public class Spacepixx : Game
         pericles18 = Content.Load<SpriteFont>(@"Fonts\Pericles18");
         pericles26 = Content.Load<SpriteFont>(@"Fonts\Pericles26");
 
-        zoomTextManager = new ZoomTextManager(new Vector2(this.GraphicsDevice.Viewport.Width / 2,
-                                                          this.GraphicsDevice.Viewport.Height / 2),
+        zoomTextManager = new ZoomTextManager(new Vector2(WIDTH / 2,
+                                                          HEIGHT / 2),
                                                           pericles16);
 
         hud = Hud.GetInstance(GraphicsDevice.Viewport.Bounds,
@@ -282,8 +307,7 @@ public class Spacepixx : Game
 
     private void setupInputs()
     {
-        gameInput.AddTouchGestureInput(TitleAction, GestureType.Tap, new Rectangle(0, 0,
-                                                                               800, 480));
+        gameInput.AddTouchGestureInput(TitleAction, GestureType.Tap, new Rectangle(0, 0, WIDTH, HEIGHT));
         gameInput.AddTouchGestureInput(BackToGameAction, GestureType.Tap, continueDestination);
         gameInput.AddTouchGestureInput(BackToMainAction, GestureType.Tap, cancelDestination);
         mainMenuManager.SetupInputs();
@@ -398,6 +422,9 @@ public class Spacepixx : Game
     protected override void Update(GameTime gameTime)
     {
         float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+        TouchPanel.DisplayHeight = HEIGHT;
+        TouchPanel.DisplayWidth = WIDTH;
 
         SoundManager.Update(gameTime);
 
@@ -852,7 +879,7 @@ public class Spacepixx : Game
     {
         GraphicsDevice.Clear(Color.Black);
 
-        spriteBatch.Begin();
+        spriteBatch.Begin(transformMatrix: screenScaleMatrix);
 
         if (gameState == GameStates.TitleScreen)
         {
@@ -868,31 +895,31 @@ public class Spacepixx : Game
 
             spriteBatch.DrawString(pericles18,
                                    ContinueText,
-                                   new Vector2(this.GraphicsDevice.Viewport.Width / 2 - pericles18.MeasureString(ContinueText).X / 2,
+                                   new Vector2(WIDTH / 2 - pericles18.MeasureString(ContinueText).X / 2,
                                                275),
                                    Color.Red * (0.25f + (float)(Math.Pow(Math.Sin(gameTime.TotalGameTime.TotalSeconds), 2.0f)) * 0.75f));
 
             spriteBatch.DrawString(pericles16,
                                    MusicByText,
-                                   new Vector2(this.GraphicsDevice.Viewport.Width / 2 - pericles18.MeasureString(MusicByText).X / 2,
+                                   new Vector2(WIDTH / 2 - pericles18.MeasureString(MusicByText).X / 2,
                                                410),
                                    Color.Red);
             spriteBatch.DrawString(pericles16,
                                    MusicCreatorText,
-                                   new Vector2(this.GraphicsDevice.Viewport.Width / 2 - pericles18.MeasureString(MusicCreatorText).X / 2,
+                                   new Vector2(WIDTH / 2 - pericles18.MeasureString(MusicCreatorText).X / 2,
                                                435),
                                    Color.Red);
 
             spriteBatch.DrawString(pericles16,
                                    VersionText,
-                                   new Vector2(this.GraphicsDevice.Viewport.Width - (pericles16.MeasureString(VersionText).X + 15),
-                                               this.GraphicsDevice.Viewport.Height - (pericles16.MeasureString(VersionText).Y + 10)),
+                                   new Vector2(WIDTH - (pericles16.MeasureString(VersionText).X + 15),
+                                               HEIGHT - (pericles16.MeasureString(VersionText).Y + 10)),
                                    Color.Red);
 
             spriteBatch.DrawString(pericles16,
                                    CreatorText,
                                    new Vector2(15,
-                                               this.GraphicsDevice.Viewport.Height - (pericles16.MeasureString(CreatorText).Y + 10)),
+                                               HEIGHT - (pericles16.MeasureString(CreatorText).Y + 10)),
                                    Color.Red);
         }
 
@@ -954,7 +981,7 @@ public class Spacepixx : Game
             // Pause title
 
             spriteBatch.Draw(spriteSheet,
-                             new Rectangle(0, 0, 800, 480),
+                             new Rectangle(0, 0, WIDTH, HEIGHT),
                              new Rectangle(0, 350, 1, 1),
                              new Color(0, 0, 0, 150));
 
