@@ -4,6 +4,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input.Touch;
 using System.IO;
 using Spacepixx.Inputs;
+using Android.Content;
+using Android.App;
+using AndroidNet = Android.Net;
 
 namespace Spacepixx
 {
@@ -42,13 +45,14 @@ namespace Spacepixx
         private Rectangle settingsDestination = new Rectangle(250, 410,
                                                           300, 50);
 
-        private bool isReviewDisplayed = true;
         private Rectangle reviewSource = new Rectangle(400, 800,
                                                        100, 100);
+        private Rectangle reviewDestination = new Rectangle(690, 380,
+                                                            100, 100);
         private Rectangle moreGamesSource = new Rectangle(400, 900,
                                                        100, 100);
-        private Rectangle moreGamesOrReviewDestination = new Rectangle(10, 380,
-                                                            100, 100);
+        private Rectangle moreGamesDestination = new Rectangle(10, 380,
+                                                               100, 100);
 
         private float opacity = 0.0f;
         private const float OpacityMax = 1.0f;
@@ -64,9 +68,8 @@ namespace Spacepixx
         private const string InstructionsAction = "Instructions";
         private const string HighscoresAction = "Highscores";
         private const string SettingsAction = "Settings";
-        private const string MoreGamesOrReviewAction = "MoreGamesOrReview";
-
-        private Random rand = new Random();
+        private const string MoreGamesAction = "MoreGames";
+        private const string ReviewAction = "Review";
 
         #endregion
 
@@ -76,8 +79,6 @@ namespace Spacepixx
         {
             this.texture = spriteSheet;
             this.gameInput = input;
-
-            isReviewDisplayed = rand.Next(2) == 0;
         }
 
         #endregion
@@ -98,10 +99,12 @@ namespace Spacepixx
             gameInput.AddTouchGestureInput(SettingsAction,
                                            GestureType.Tap,
                                            settingsDestination);
-
-            gameInput.AddTouchGestureInput(MoreGamesOrReviewAction,
+            gameInput.AddTouchGestureInput(MoreGamesAction,
                                            GestureType.Tap,
-                                           moreGamesOrReviewDestination);
+                                           moreGamesDestination);
+            gameInput.AddTouchGestureInput(ReviewAction,
+                                           GestureType.Tap,
+                                           reviewDestination);
         }
 
         public void Update(GameTime gameTime)
@@ -144,20 +147,14 @@ namespace Spacepixx
                              settingsSource,
                              Color.Red * opacity);
 
-            if (isReviewDisplayed)
-            {
-                spriteBatch.Draw(texture,
-                             moreGamesOrReviewDestination,
-                             reviewSource,
-                             Color.Red * opacity);
-            }
-            else
-            {
-                spriteBatch.Draw(texture,
-                             moreGamesOrReviewDestination,
-                             moreGamesSource,
-                             Color.Red * opacity);
-            }
+            spriteBatch.Draw(texture,
+                            reviewDestination,
+                            reviewSource,
+                            Color.Red * opacity);
+            spriteBatch.Draw(texture,
+                            moreGamesDestination,
+                            moreGamesSource,
+                            Color.Red * opacity);
         }
 
         private void handleTouchInputs()
@@ -178,14 +175,28 @@ namespace Spacepixx
             {
                 this.lastPressedMenuItem = MenuItems.Settings;
             }
-            else if (gameInput.IsPressed(MoreGamesOrReviewAction))
+            else if (gameInput.IsPressed(MoreGamesAction))
             {
-                // TODO open in browser
+                var devStoreUri = "https://play.google.com/store/apps/dev?id=4634207615548190812";
+                launchInBrowser(devStoreUri);
+            }
+            else if (gameInput.IsPressed(ReviewAction))
+            {
+                var packageName = Application.Context.PackageName;
+                var appInStoreUri = "https://play.google.com/store/apps/details?id=" + packageName;
+                launchInBrowser(appInStoreUri);
             }
             else
             {
                 this.lastPressedMenuItem = MenuItems.None;
             }
+        }
+
+        private void launchInBrowser(string uri)
+        {
+            var intent = new Intent(Intent.ActionView, AndroidNet.Uri.Parse(uri))
+                .AddFlags(ActivityFlags.NewTask);
+            Application.Context.StartActivity(intent);
         }
 
         #endregion
@@ -198,8 +209,6 @@ namespace Spacepixx
             this.opacity = Single.Parse(reader.ReadLine());
             this.isActive = Boolean.Parse(reader.ReadLine());
             this.time = Single.Parse(reader.ReadLine());
-
-            this.isReviewDisplayed = Boolean.Parse(reader.ReadLine());
         }
 
         public void Deactivated(StreamWriter writer)
@@ -208,8 +217,6 @@ namespace Spacepixx
             writer.WriteLine(opacity);
             writer.WriteLine(isActive);
             writer.WriteLine(time);
-
-            writer.WriteLine(isReviewDisplayed);
         }
 
         #endregion
