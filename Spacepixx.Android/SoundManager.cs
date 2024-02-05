@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Content;
 using System.Diagnostics;
 using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework;
+using Android.Util;
 
 namespace Spacepixx
 {
@@ -54,7 +55,6 @@ namespace Spacepixx
         private static Random rand = new Random();
 
         private static Song backgroundSound;
-        //private static SoundEffectInstance backgroundSound;
 
         // performance improvements
         public const float MinTimeBetweenHitSound = 0.2f;
@@ -536,18 +536,28 @@ namespace Spacepixx
             {
                 if (MediaPlayer.GameHasControl)
                 {
+                    MediaPlayer.Stop();
                     MediaPlayer.Play(backgroundSound);
                     MediaPlayer.IsRepeating = true;
                     MediaPlayer.Volume = settings.GetMusicValue();
+                }
+                else
+                {
+                    Log.Info("SoundManager", "Game has not control to play music");
                 }
             }
             catch (UnauthorizedAccessException)
             {
                 // play no music...
+                Log.Info("SoundManager", "Could not play background music");
             }
-            catch (InvalidOperationException)
+            catch (InvalidOperationException ex)
             {
                 // play no music (because of Zune on PC)
+                Log.Info("SoundManager", "Cannot play background music: " + ex.Message);
+                // FIXME On Android (or MonoGame in general), MediaPlayer.Play()
+                //       is running into this exception after resume:
+                //       ObjectDisposed_Generic ObjectDisposed_ObjectName_Name, song
             }
         }
 

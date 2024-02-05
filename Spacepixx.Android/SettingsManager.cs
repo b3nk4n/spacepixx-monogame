@@ -46,7 +46,7 @@ namespace Spacepixx
 
         private readonly Rectangle cancelSource = new Rectangle(0, 750,
                                                                 300, 50);
-        private readonly Rectangle cancelDestination = new Rectangle(350, 370,
+        private readonly Rectangle cancelDestination = new Rectangle(250, 370,
                                                                      300, 50);
 
         private NeutralPositionValues neutralPositionValue = NeutralPositionValues.Angle20;
