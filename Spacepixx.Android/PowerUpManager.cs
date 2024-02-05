@@ -1,0 +1,485 @@
+using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System.IO;
+
+namespace Spacepixx
+{
+    class PowerUpManager
+    {
+        #region Members
+
+        private List<PowerUp> powerUps = new List<PowerUp>(16);
+        private Texture2D texture;
+
+        private const int SPAWN_CHANCE = 10; // 10%
+
+        private PowerUp.PowerUpType lastPowerUp = PowerUp.PowerUpType.Life;
+
+        private float extraLifeTimer = 0.0f;
+        private const float extraLifeMinTimer = 120.0f;
+
+        private Random rand = new Random();
+
+        #endregion
+
+        #region Constructors
+
+        public PowerUpManager(Texture2D texture)
+        {
+            this.texture = texture;
+        }
+
+        #endregion
+
+        #region Methods
+
+        public void ProbablySpawnPowerUp(Vector2 location)
+        {
+            int spawnChance = rand.Next(100);
+            
+            if (spawnChance >= SPAWN_CHANCE)
+                return;
+
+            int rnd = rand.Next(67);
+
+            PowerUp.PowerUpType type = PowerUp.PowerUpType.SpecialShot;
+            Rectangle initialFrame = new Rectangle(0, 0, 25, 25);
+
+            switch(rnd)
+            {
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                    type = PowerUp.PowerUpType.Health25;
+                    initialFrame = new Rectangle(0, 0, 25, 25);
+                    break;
+
+                case 4:
+                case 5:
+                    type = PowerUp.PowerUpType.Health50;
+                    initialFrame = new Rectangle(0, 25, 25, 25);
+                    break;
+
+                case 6:
+                    type = PowerUp.PowerUpType.Health100;
+                    initialFrame = new Rectangle(0, 50, 25, 25);
+                    break;
+
+                case 7:
+                    type = PowerUp.PowerUpType.Life;
+                    initialFrame = new Rectangle(0, 75, 25, 25);
+                    break;
+
+                case 8:
+                case 9:
+                    type = PowerUp.PowerUpType.SpecialShot;
+                    initialFrame = new Rectangle(0, 100, 25, 25);
+                    break;
+
+                case 10:
+                    type = PowerUp.PowerUpType.KillAll;
+                    initialFrame = new Rectangle(0, 125, 25, 25);
+                    break;
+
+                case 11:
+                case 12:
+                case 13:
+                case 14:
+                case 15:
+                case 16:
+                case 17:
+                case 18:
+                    type = PowerUp.PowerUpType.LowBonusScore;
+                    initialFrame = new Rectangle(0, 150, 25, 25);
+                    break;
+
+                case 19:
+                case 20:
+                case 21:
+                case 22:
+                case 23:
+                case 24:
+                case 25:
+                    type = PowerUp.PowerUpType.MediumBonusScore;
+                    initialFrame = new Rectangle(0, 175, 25, 25);
+                    break;
+
+                case 26:
+                case 27:
+                case 28:
+                case 29:
+                    type = PowerUp.PowerUpType.HighBonusScore;
+                    initialFrame = new Rectangle(0, 200, 25, 25);
+                    break;
+
+                case 30:
+                case 31:
+                case 32:
+                    type = PowerUp.PowerUpType.CoolWater;
+                    initialFrame = new Rectangle(0, 225, 25, 25);
+                    break;
+
+                case 33:
+                case 34:
+                    type = PowerUp.PowerUpType.BonusRockets;
+                    initialFrame = new Rectangle(0, 250, 25, 25);
+                    break;
+
+                case 35:
+                case 36:
+                case 37:
+                    type = PowerUp.PowerUpType.Shield;
+                    initialFrame = new Rectangle(0, 275, 25, 25);
+                    break;
+
+                case 38:
+                case 39:
+                case 40:
+                    type = PowerUp.PowerUpType.ScoreMultiLow;
+                    initialFrame = new Rectangle(0, 300, 25, 25);
+                    break;
+
+                case 41:
+                case 42:
+                    type = PowerUp.PowerUpType.ScoreMultiMedium;
+                    initialFrame = new Rectangle(0, 325, 25, 25);
+                    break;
+
+                case 43:
+                    type = PowerUp.PowerUpType.ScoreMultiHigh;
+                    initialFrame = new Rectangle(0, 350, 25, 25);
+                    break;
+
+                case 44:
+                case 45:
+                case 46:
+                case 47:
+                case 48:
+                    type = PowerUp.PowerUpType.Random;
+                    initialFrame = new Rectangle(0, 375, 25, 25);
+                    break;
+
+                case 49:
+                case 50:
+                case 51:
+                    type = PowerUp.PowerUpType.OverHeat;
+                    initialFrame = new Rectangle(0, 400, 25, 25);
+                    break;
+
+                case 52:
+                case 53:
+                    type = PowerUp.PowerUpType.AntiScoreMulti;
+                    initialFrame = new Rectangle(0, 425, 25, 25);
+                    break;
+
+                case 54:
+                case 55:
+                    type = PowerUp.PowerUpType.OutOfControl;
+                    initialFrame = new Rectangle(0, 450, 25, 25);
+                    break;
+
+                case 56:
+                case 57:
+                case 58:
+                    type = PowerUp.PowerUpType.Slow;
+                    initialFrame = new Rectangle(0, 475, 25, 25);
+                    break;
+
+                case 59:
+                case 60:
+                    type = PowerUp.PowerUpType.Overdrive;
+                    initialFrame = new Rectangle(0, 500, 25, 25);
+                    break;
+                
+                case 61:
+                case 62:
+                    type = PowerUp.PowerUpType.Underdrive;
+                    initialFrame = new Rectangle(0, 525, 25, 25);
+                    break;
+
+                case 63:
+                case 64:
+                    type = PowerUp.PowerUpType.Friendly;
+                    initialFrame = new Rectangle(0, 550, 25, 25);
+                    break;
+
+                case 65:
+                case 66:
+                    type = PowerUp.PowerUpType.Angry;
+                    initialFrame = new Rectangle(0, 575, 25, 25);
+                    break;
+            }
+
+            if (type == PowerUp.PowerUpType.Life && extraLifeTimer < extraLifeMinTimer)
+                return;
+            else if (type == PowerUp.PowerUpType.Life && extraLifeTimer > extraLifeMinTimer)
+                extraLifeTimer = 0.0f;
+
+            // check, that the new powerup to drop is not equal
+            // to the last one
+            if (type == lastPowerUp)
+                return;
+            else
+                lastPowerUp = type;
+
+            PowerUp p = new PowerUp(texture,
+                                    location - new Vector2(12.5f, 12.5f),
+                                    initialFrame,
+                                    1,
+                                    type);
+
+            powerUps.Add(p);
+        }
+
+        public PowerUp.PowerUpType GetPowerUpNotRandom()
+        {
+            int rnd = rand.Next(23);
+            PowerUp.PowerUpType type = PowerUp.PowerUpType.ScoreMultiLow;
+
+            switch (rnd)
+            {
+                case 0:
+                    type =  PowerUp.PowerUpType.Health25;
+                    break;
+
+                case 1:
+                    type = PowerUp.PowerUpType.Health50;
+                    break;
+
+                case 2:
+                    type = PowerUp.PowerUpType.Health100;
+                    break;
+
+                case 3:
+                    type = PowerUp.PowerUpType.ScoreMultiLow;
+                    break;
+
+                case 4:
+                    type = PowerUp.PowerUpType.ScoreMultiMedium;
+                    break;
+
+                case 5:
+                    type = PowerUp.PowerUpType.ScoreMultiHigh;
+                    break;
+
+                case 6:
+                    type = PowerUp.PowerUpType.CoolWater;
+                    break;
+
+                case 7:
+                    type = PowerUp.PowerUpType.Life;
+                    break;
+
+                case 8:
+                    type = PowerUp.PowerUpType.KillAll;
+                    break;
+
+                case 9:
+                    type = PowerUp.PowerUpType.LowBonusScore;
+                    break;
+
+                case 10:
+                    type = PowerUp.PowerUpType.MediumBonusScore;
+                    break;
+
+                case 11:
+                    type = PowerUp.PowerUpType.HighBonusScore;
+                    break;
+
+                case 12:
+                    type = PowerUp.PowerUpType.OutOfControl;
+                    break;
+
+                case 13:
+                    type = PowerUp.PowerUpType.OverHeat;
+                    break;
+
+                case 14:
+                    type = PowerUp.PowerUpType.SpecialShot;
+                    break;
+
+                case 15:
+                    type = PowerUp.PowerUpType.AntiScoreMulti;
+                    break;
+
+                case 16:
+                    type = PowerUp.PowerUpType.Slow;
+                    break;
+
+                case 17:
+                    type = PowerUp.PowerUpType.BonusRockets;
+                    break;
+
+                case 18:
+                    type = PowerUp.PowerUpType.Shield;
+                    break;
+
+                case 19:
+                    type = PowerUp.PowerUpType.Overdrive;
+                    break;
+
+                case 20:
+                    type = PowerUp.PowerUpType.Underdrive;
+                    break;
+
+                case 21:
+                    type = PowerUp.PowerUpType.Friendly;
+                    break;
+
+                case 22:
+                    type = PowerUp.PowerUpType.Angry;
+                    break;
+            }
+
+            return type;
+        }
+
+        public void Reset()
+        {
+            this.PowerUps.Clear();
+            this.lastPowerUp = PowerUp.PowerUpType.Life;
+
+            this.extraLifeTimer = 0.0f;
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            extraLifeTimer += elapsed;
+
+            for (int x = powerUps.Count - 1; x >= 0; --x)
+            {
+                powerUps[x].Update(gameTime);
+
+                if (!powerUps[x].IsActive)
+                {
+                    powerUps.RemoveAt(x);
+                }
+            }
+        }
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            foreach (var powerUp in powerUps)
+            {
+                powerUp.Draw(spriteBatch);
+            }
+        }
+
+        private Rectangle getInitialFrameByType(PowerUp.PowerUpType type)
+        {
+            switch (type)
+            {
+                case PowerUp.PowerUpType.Health25:
+                    return new Rectangle(0, 0, 25, 25);
+                case PowerUp.PowerUpType.Health50:
+                    return new Rectangle(0, 25, 25, 25);
+                case PowerUp.PowerUpType.Health100:
+                    return new Rectangle(0, 50, 25, 25);
+                case PowerUp.PowerUpType.CoolWater:
+                    return new Rectangle(0, 225, 25, 25);
+                case PowerUp.PowerUpType.Life:
+                    return new Rectangle(0, 75, 25, 25);
+                case PowerUp.PowerUpType.SpecialShot:
+                    return new Rectangle(0, 100, 25, 25);
+                case PowerUp.PowerUpType.KillAll:
+                    return new Rectangle(0, 125, 25, 25);
+                case PowerUp.PowerUpType.LowBonusScore:
+                    return new Rectangle(0, 150, 25, 25);
+                case PowerUp.PowerUpType.MediumBonusScore:
+                    return new Rectangle(0, 175, 25, 25);
+                case PowerUp.PowerUpType.HighBonusScore:
+                    return new Rectangle(0, 200, 25, 25);
+                case PowerUp.PowerUpType.ScoreMultiLow:
+                    return new Rectangle(0, 300, 25, 25);
+                case PowerUp.PowerUpType.ScoreMultiMedium:
+                    return new Rectangle(0, 325, 25, 25);
+                case PowerUp.PowerUpType.ScoreMultiHigh:
+                    return new Rectangle(0, 350, 25, 25);
+                case PowerUp.PowerUpType.BonusRockets:
+                    return new Rectangle(0, 250, 25, 25);
+                case PowerUp.PowerUpType.Shield:
+                    return new Rectangle(0, 275, 25, 25);
+                case PowerUp.PowerUpType.AntiScoreMulti:
+                    return new Rectangle(0, 425, 25, 25);
+                case PowerUp.PowerUpType.OutOfControl:
+                    return new Rectangle(0, 450, 25, 25);
+                case PowerUp.PowerUpType.Slow:
+                    return new Rectangle(0, 475, 25, 25);
+                case PowerUp.PowerUpType.OverHeat:
+                    return new Rectangle(0, 400, 25, 25);
+                case PowerUp.PowerUpType.Random:
+                    return new Rectangle(0, 375, 25, 25);
+                case PowerUp.PowerUpType.Overdrive:
+                    return new Rectangle(0, 500, 25, 25);
+                case PowerUp.PowerUpType.Underdrive:
+                    return new Rectangle(0, 525, 25, 25);
+                case PowerUp.PowerUpType.Friendly:
+                    return new Rectangle(0, 550, 25, 25);
+                case PowerUp.PowerUpType.Angry:
+                    return new Rectangle(0, 575, 25, 25);
+                default:
+                    return new Rectangle(0, 0, 25, 25);
+            }
+        }
+
+        #endregion
+
+        #region Activate/Deactivate
+
+        public void Activated(StreamReader reader)
+        {
+            int powerUpsCount = Int32.Parse(reader.ReadLine());
+            
+            powerUps.Clear();
+
+            for (int i = 0; i < powerUpsCount; ++i)
+            {
+                PowerUp.PowerUpType type = PowerUp.PowerUpType.Random;
+                type = (PowerUp.PowerUpType)Enum.Parse(type.GetType(), reader.ReadLine(), false);
+                PowerUp p = new PowerUp(texture,
+                                    Vector2.Zero,
+                                    getInitialFrameByType(type),
+                                    1,
+                                    type);
+                p.Activated(reader);
+                powerUps.Add(p);
+            }
+
+            this.lastPowerUp = (PowerUp.PowerUpType)Enum.Parse(lastPowerUp.GetType(), reader.ReadLine(), false);
+            this.extraLifeTimer = Single.Parse(reader.ReadLine());
+        }
+
+        public void Deactivated(StreamWriter writer)
+        {
+            writer.WriteLine(powerUps.Count);
+
+            for (int i = 0; i < powerUps.Count; ++i)
+            {
+                writer.WriteLine(powerUps[i].Type);
+                powerUps[i].Deactivated(writer);
+            }
+
+            writer.WriteLine(lastPowerUp);
+            writer.WriteLine(extraLifeTimer);
+        }
+
+        #endregion
+
+        #region Properties
+
+        public List<PowerUp> PowerUps
+        {
+            get
+            {
+                return powerUps;
+            }
+        }
+
+        #endregion
+    }
+}

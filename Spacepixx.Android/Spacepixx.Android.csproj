@@ -14,9 +14,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Resources\Drawable\" />
+    <None Remove="Extensions\" />
+    <None Remove="AccelerometerHelper\" />
+    <None Remove="Inputs\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\Drawable\" />
+    <Folder Include="Extensions\" />
+    <Folder Include="AccelerometerHelper\" />
+    <Folder Include="Inputs\" />
   </ItemGroup>
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
     <Message Text="Restoring dotnet tools" Importance="High" />
