@@ -10,7 +10,7 @@ using Spacepixx.Inputs;
 
 namespace Spacepixx;
 
-public class Spacepixx : Game
+public class Spacepixx : Game, IBackButtonPressedCallback
 {
     /*
      * The game's fixed width and heigth of the screen.
@@ -115,6 +115,8 @@ public class Spacepixx : Game
                                                                    300, 50);
 
     PhonePositionManager phonePositionManager;
+
+    private bool backButtonPressed = false;
 
     public Spacepixx()
     {
@@ -429,8 +431,6 @@ public class Spacepixx : Game
         SoundManager.Update(gameTime);
 
         gameInput.BeginUpdate();
-
-        bool backButtonPressed = false;
 
         backButtonTimer += elapsed;
 
@@ -1109,6 +1109,11 @@ public class Spacepixx : Game
                            playerManager.CarliRocketsRemaining,
                            playerManager.ScoreMulti,
                            levelManager.CurrentLevel);
+    }
+
+    public void BackButtonPressed()
+    {
+        backButtonPressed = true;
     }
 }
 

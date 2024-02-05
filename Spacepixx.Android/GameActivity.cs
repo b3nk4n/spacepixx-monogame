@@ -1,7 +1,9 @@
-﻿using Android.App;
+﻿using System;
+using Android.App;
 using Android.Content.PM;
 using Android.OS;
 using Android.Views;
+using Android.Window;
 using Microsoft.Xna.Framework;
 
 namespace Spacepixx.Android
@@ -27,8 +29,32 @@ namespace Spacepixx.Android
             _game = new Spacepixx();
             _view = _game.Services.GetService(typeof(View)) as View;
 
+            if (OperatingSystem.IsAndroidVersionAtLeast(33))
+            {
+                // Starting from Android API 33, we can support the geasture
+                // BACK buttons.
+                // When the phone is running on an older API level, we rely
+                // on GamePad BACK key handled by the game.
+                OnBackInvokedDispatcher.RegisterOnBackInvokedCallback(0, new OnBackInvokedCallback(_game));
+            }
+
             SetContentView(_view);
             _game.Run();
+        }
+    }
+
+    class OnBackInvokedCallback : Java.Lang.Object, IOnBackInvokedCallback
+    {
+        private readonly IBackButtonPressedCallback callback;
+
+        public OnBackInvokedCallback(IBackButtonPressedCallback callback)
+        {
+            this.callback = callback;
+        }
+
+        public void OnBackInvoked()
+        {
+            callback.BackButtonPressed();
         }
     }
 }
