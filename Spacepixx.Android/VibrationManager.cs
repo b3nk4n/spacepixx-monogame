@@ -1,5 +1,5 @@
 using System;
-using Microsoft.Devices;
+using Xamarin.Essentials;
 
 namespace Spacepixx
 {
@@ -9,9 +9,16 @@ namespace Spacepixx
 
         public static void Vibrate(float seconds)
         {
-            // TODO use Xamarin.Essentials
-            //if (settings.GetVabrationValue())
-            //    VibrateController.Default.Start(TimeSpan.FromSeconds(seconds));
+            if (!settings.GetVabrationValue())
+            {
+                return;
+            }
+
+            try
+            {
+                Vibration.Vibrate(TimeSpan.FromSeconds(seconds).TotalMilliseconds);
+            }
+            catch { /* Ignored */ }
         }
     }
 }
