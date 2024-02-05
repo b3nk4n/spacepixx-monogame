@@ -617,102 +617,22 @@ namespace Spacepixx
                     }
                 }
 
-            // ***** new in version 1.2 to 2.4 - 30fps *****
-            //currentAccValue.X = currentAccValue.X + (float)Math.Sin(settings.GetNeutralPosition());
-
-            //currentAccValue.Y = MathHelper.Clamp(currentAccValue.Y, -0.4f, 0.4f);
-            //currentAccValue.X = MathHelper.Clamp(currentAccValue.X, -0.4f, 0.4f);
-
-            //if (!IsOutOfControl)
-            //    playerSprite.Velocity = new Vector2(-currentAccValue.Y * 6,
-            //                                        -currentAccValue.X * 3);
-            //else
-            //    playerSprite.Velocity = new Vector2(currentAccValue.Y * 6,
-            //                                        -currentAccValue.X * 3);
-
-            //if (playerSprite.Velocity.Length() < 0.1f)
-            //{
-            //    playerSprite.Velocity = Vector2.Zero;
-            //}
-
-            // ******* Version 2.5 - 60 fps ********
-            Vector3 current = currentAccValue;
-            current.X = current.X + (float)Math.Sin(settings.GetNeutralPosition());
+            Vector3 current = Vector3.Transform(currentAccValue, Matrix.CreateRotationY(-settings.GetNeutralPosition()));
 
             current.Y = MathHelper.Clamp(current.Y, -0.4f, 0.4f);
             current.X = MathHelper.Clamp(current.X, -0.4f, 0.4f);
 
             if (!IsOutOfControl)
-                playerSprite.Velocity = new Vector2(-current.Y * 6,
-                                                    -current.X * 3);
-            else
                 playerSprite.Velocity = new Vector2(current.Y * 6,
-                                                    -current.X * 3);
+                                                    current.X * 3);
+            else
+                playerSprite.Velocity = new Vector2(-current.Y * 6,
+                                                    current.X * 3);
 
             if (playerSprite.Velocity.Length() < 0.15f)
             {
                 playerSprite.Velocity = Vector2.Zero;
             }
-        }
-
-        private void HandleKeyboardInput(KeyboardState state)
-        {
-            #if DEBUG
-
-            if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.D1))
-            {
-                fireShot();
-            }
-            if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.D2))
-            {
-                fireDoubleShot();
-            }
-            if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.D3))
-            {
-                fireTripleShot();
-            }
-            if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Q))
-            {
-                fireSideLeftShot();
-            }
-            if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.W))
-            {
-                fireSideRightShot();
-            }
-            if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.D4))
-            {
-                fireSpecialShot();
-            }
-            if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.D5))
-            {
-                fireCarliRocket();
-            }
-
-            Vector2 velo = Vector2.Zero;
-
-            if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
-            {
-                velo += new Vector2(-1.0f, 0.0f);
-            }
-            if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
-            {
-                velo += new Vector2(1.0f, 0.0f);
-            }
-            if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up))
-            {
-                velo += new Vector2(0.0f, -1.0f);
-            }
-            if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down))
-            {
-                velo += new Vector2(0.0f, 1.0f);
-            }
-
-            if (velo != Vector2.Zero)
-                velo.Normalize();
-
-            playerSprite.Velocity = velo;
-
-            #endif
         }
 
         private void adaptMovementLimits()
@@ -760,7 +680,6 @@ namespace Spacepixx
                 rocketTimer -= elapsed;
 
                 HandleTouchInput(TouchPanel.GetState());
-                HandleKeyboardInput(Keyboard.GetState());
 
                 if (playerSprite.Velocity.Length() != 0.0f)
                 {

@@ -52,12 +52,7 @@ namespace Spacepixx
                                                    new Rectangle(500, 600, 300, 200)};
         private readonly Rectangle PhoneUnknownSource = new Rectangle(800, 600, 300, 200);
 
-        private readonly Rectangle PhoneSelectedDestination = new Rectangle(250, 170, 300, 200);
-
-        private readonly Rectangle PhoneBehind1Destination = new Rectangle(295, 140, 210, 140);
-        private readonly Rectangle PhoneBehind2Destination = new Rectangle(313, 120, 174, 116);
-        private readonly Rectangle PhoneBehind3Destination = new Rectangle(331, 100, 138, 92);
-        private readonly Rectangle PhoneBehind4Destination = new Rectangle(349, 80, 102, 68);
+        private readonly Rectangle PhoneSelectedDestination = new Rectangle(250, 150, 300, 200);
 
         private readonly SettingsManager settingsManager;
 
@@ -171,41 +166,9 @@ namespace Spacepixx
 
             // Phones:
             int phoneIndex = settingsManager.GetNeutralPositionIndex();
-            int rightIndex = phoneIndex + 1;
-            int right2Index = phoneIndex + 2;
-            int right3Index = phoneIndex + 3;
-            int right4Index = phoneIndex + 4;
 
             if (phoneIndex >= 0 && phoneIndex < PhoneSource.Length)
             {
-                if (right4Index >= 0 && right4Index < PhoneSource.Length)
-                    spriteBatch.Draw(
-                        Texture,
-                        PhoneBehind4Destination,
-                        PhoneSource[right4Index],
-                        Color.Red * 0.1f);
-
-                if (right3Index >= 0 && right3Index < PhoneSource.Length)
-                    spriteBatch.Draw(
-                        Texture,
-                        PhoneBehind3Destination,
-                        PhoneSource[right3Index],
-                        Color.Red * 0.2f);
-
-                if (right2Index >= 0 && right2Index < PhoneSource.Length)
-                    spriteBatch.Draw(
-                        Texture,
-                        PhoneBehind2Destination,
-                        PhoneSource[right2Index],
-                        Color.Red * 0.3f);
-
-                if (rightIndex >= 0 && rightIndex < PhoneSource.Length)
-                    spriteBatch.Draw(
-                        Texture,
-                        PhoneBehind1Destination,
-                        PhoneSource[rightIndex],
-                        Color.Red * 0.4f);
-
                 spriteBatch.Draw(
                     Texture,
                     PhoneSelectedDestination,
@@ -230,13 +193,13 @@ namespace Spacepixx
                                           (float)e.AverageAcceleration.Y,
                                           (float)e.AverageAcceleration.Z);
 
-                if (currentAccValue.Z > 0.001f || Math.Abs(currentAccValue.Y) > 0.5f)
+                if (currentAccValue.Z < 0.001f || Math.Abs(currentAccValue.Y) > 0.5f)
                 {
                     settingsManager.SetNeutralPosition(SettingsManager.NeutralPositionValues.Unsupported);
                     return;
                 }
 
-                float val = -(float)Math.Asin(currentAccValue.X);
+                float val = (float) Math.Asin(currentAccValue.X);
 
                 if (val >= settingsManager.GetNeutralPositionRadianValue(-10.0f) && val < settingsManager.GetNeutralPositionRadianValue(5.0f))
                     settingsManager.SetNeutralPosition(SettingsManager.NeutralPositionValues.Angle0);
