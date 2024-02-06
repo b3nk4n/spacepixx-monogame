@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.IO.IsolatedStorage;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -75,7 +73,6 @@ public class Spacepixx : Game, IBackButtonPressedCallback
     private const float titleScreenDelayTime = 1.0f;
 
     private Vector2 playerStartLocation = new Vector2(375, 375);
-    private Vector2 highscoreLocation = new Vector2(10, 10);
 
     Hud hud;
 
@@ -142,7 +139,16 @@ public class Spacepixx : Game, IBackButtonPressedCallback
     /// </summary>
     protected override void Initialize()
     {
-        graphics.IsFullScreen = true;
+        // The fullscreen mode on Android in MonoGame is unfortunately a bit broken,
+        // and does not correctly incorporate the hidden status bar,
+        // or gesture button controls. And therefore, the reported back-buffer
+        // resolution is incorrect, and we are scaling the screen incorrectly.
+        // See for example:
+        // https://community.monogame.net/t/graphicsdevice-presentationparameters-has-wrong-backbuffer-size-on-vanilla-android/16412
+        // https://community.monogame.net/t/full-screen-on-android/19136/5
+        // So we need to live with non-fullscreen mode for now...
+        // graphics.IsFullScreen = true;
+
         graphics.PreferredBackBufferHeight = HEIGHT;
         graphics.PreferredBackBufferWidth = WIDTH;
         graphics.SupportedOrientations = DisplayOrientation.LandscapeLeft;
@@ -791,6 +797,8 @@ public class Spacepixx : Game, IBackButtonPressedCallback
         base.Update(gameTime);
     }
 
+    private readonly Color VERY_DARK_GRAY = new Color(6, 6, 6);
+
     /// <summary>
     /// This is called when the game should draw itself.
     /// </summary>
@@ -800,6 +808,11 @@ public class Spacepixx : Game, IBackButtonPressedCallback
         GraphicsDevice.Clear(Color.Black);
 
         spriteBatch.Begin(transformMatrix: screenScaleMatrix);
+
+        spriteBatch.Draw(spriteSheet,
+            new Rectangle(0, 0, WIDTH, HEIGHT),
+            new Rectangle(0, 360, 16, 16),
+            VERY_DARK_GRAY);
 
         if (gameState == GameStates.TitleScreen)
         {
