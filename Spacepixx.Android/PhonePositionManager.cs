@@ -14,12 +14,12 @@ namespace Spacepixx
 
         private readonly Rectangle cancelSource = new Rectangle(0, 750,
                                                                 300, 50);
-        private readonly Rectangle cancelDestination = new Rectangle(450, 370,
+        private readonly Rectangle cancelDestination = new Rectangle(450, 390,
                                                                      300, 50);
 
         private readonly Rectangle goSource = new Rectangle(0, 1150,
                                                             240, 50);
-        private readonly Rectangle goDestination = new Rectangle(50, 370,
+        private readonly Rectangle goDestination = new Rectangle(50, 390,
                                                                     300, 50);
 
         private static PhonePositionManager phonePositionManager;
@@ -161,7 +161,7 @@ namespace Spacepixx
             spriteBatch.DrawString(Font,
                                 TEXT_PHONEPOSITION,
                                 new Vector2(400 - Font.MeasureString(TEXT_PHONEPOSITION).X / 2,
-                                            50),
+                                            70),
                                 Color.Red * opacity);
 
             // Phones:

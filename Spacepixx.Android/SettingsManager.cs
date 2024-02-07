@@ -20,7 +20,7 @@ namespace Spacepixx
         private static SpriteFont font;
         private readonly Rectangle SettingsTitleSource = new Rectangle(0, 400,
                                                                        300, 50);
-        private readonly Vector2 TitlePosition = new Vector2(250.0f, 100.0f);
+        private readonly Vector2 TitlePosition = new Vector2(250.0f, 80.0f);
 
         public enum SoundValues {Off, VeryLow, Low, Med, High, VeryHigh};
         public enum VibrationValues { On, Off };
@@ -28,25 +28,25 @@ namespace Spacepixx
 
         private const string MUSIC_TITLE = "Music: ";
         private SoundValues musicValue = SoundValues.Low;
-        private readonly int musicPositionY = 200;
-        private readonly Rectangle musicDestination = new Rectangle(250, 195,
+        private readonly int musicPositionY = 190;
+        private readonly Rectangle musicDestination = new Rectangle(250, 185,
                                                                     300, 50);
 
         private const string SFX_TITLE = "SFX: ";
         private SoundValues sfxValue = SoundValues.High;
-        private readonly int sfxPositionY = 270;
-        private readonly Rectangle sfxDestination = new Rectangle(250, 265,
+        private readonly int sfxPositionY = 260;
+        private readonly Rectangle sfxDestination = new Rectangle(250, 255,
                                                                   300, 50);
 
         private const string VIBRATION_TITLE = "Vibration: ";
         private VibrationValues vibrationValue = VibrationValues.On;
-        private readonly int vibrationPositionY = 340;
-        private readonly Rectangle vibrationDestination = new Rectangle(250, 335,
+        private readonly int vibrationPositionY = 330;
+        private readonly Rectangle vibrationDestination = new Rectangle(250, 325,
                                                                         300, 50);
 
         private readonly Rectangle cancelSource = new Rectangle(0, 750,
                                                                 300, 50);
-        private readonly Rectangle cancelDestination = new Rectangle(250, 370,
+        private readonly Rectangle cancelDestination = new Rectangle(250, 390,
                                                                      300, 50);
 
         private NeutralPositionValues neutralPositionValue = NeutralPositionValues.Angle20;

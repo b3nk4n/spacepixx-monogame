@@ -61,7 +61,6 @@ public class Spacepixx : Game, IBackButtonPressedCallback
 
     SpriteFont pericles16;
     SpriteFont pericles18;
-    SpriteFont pericles26;
 
     ZoomTextManager zoomTextManager;
 
@@ -254,7 +253,6 @@ public class Spacepixx : Game, IBackButtonPressedCallback
 
         pericles16 = Content.Load<SpriteFont>(@"Fonts\Pericles16");
         pericles18 = Content.Load<SpriteFont>(@"Fonts\Pericles18");
-        pericles26 = Content.Load<SpriteFont>(@"Fonts\Pericles26");
 
         zoomTextManager = new ZoomTextManager(new Vector2(WIDTH / 2,
                                                           HEIGHT / 2),
@@ -305,7 +303,7 @@ public class Spacepixx : Game, IBackButtonPressedCallback
         SettingsManager.GameInput = gameInput;
 
         phonePositionManager = PhonePositionManager.GetInstance();
-        PhonePositionManager.Font = pericles26;
+        PhonePositionManager.Font = pericles18;
         PhonePositionManager.Texture = menuSheet;
         PhonePositionManager.GameInput = gameInput;
 
@@ -340,6 +338,18 @@ public class Spacepixx : Game, IBackButtonPressedCallback
             stateBeforePaused = gameState;
             gameState = GameStates.Paused;
         }
+    }
+
+    protected override void OnActivated(object sender, EventArgs args)
+    {
+        base.OnActivated(sender, args);
+
+        // Ensure we stay fullscreen, even after app resume
+        // this.graphics.IsFullScreen = false;
+
+        // Somehow fullscreen mode seems to work fine on Android when we set it here in OnActivated?!
+        // And does not skrew up the screen aspect ratio / resolution
+        this.graphics.IsFullScreen = true;
     }
 
     /// <summary>
@@ -797,7 +807,7 @@ public class Spacepixx : Game, IBackButtonPressedCallback
         base.Update(gameTime);
     }
 
-    private readonly Color VERY_DARK_GRAY = new Color(6, 6, 6);
+    private readonly Color VERY_DARK_GRAY = new Color(10, 10, 10);
 
     /// <summary>
     /// This is called when the game should draw itself.

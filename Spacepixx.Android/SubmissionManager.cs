@@ -14,12 +14,12 @@ namespace Spacepixx
 
         private readonly Rectangle cancelSource = new Rectangle(0, 750,
                                                                 300, 50);
-        private readonly Rectangle cancelDestination = new Rectangle(450, 370,
+        private readonly Rectangle cancelDestination = new Rectangle(450, 390,
                                                                      300, 50);
 
         private readonly Rectangle retrySource = new Rectangle(0, 1100,
                                                                   300, 50);
-        private readonly Rectangle retryDestination = new Rectangle(50, 370,
+        private readonly Rectangle retryDestination = new Rectangle(50, 390,
                                                                     300, 50);
 
         private static SubmissionManager submissionManager;
@@ -28,9 +28,10 @@ namespace Spacepixx
 
         public static Texture2D Texture;
         public static SpriteFont Font;
-        private readonly Rectangle TitleSource = new Rectangle(0, 600,
-                                                               500, 100);
-        private readonly Vector2 TitlePosition = new Vector2(150.0f, 80.0f);
+        private readonly Rectangle TitleSource = new Rectangle(0, 0,
+                                                          500, 100);
+        private readonly Rectangle TitleDestination = new Rectangle(150, 80,
+                                                                    500, 100);
 
         private float opacity = 0.0f;
         private const float OpacityMax = 1.0f;
@@ -128,29 +129,29 @@ namespace Spacepixx
             spriteBatch.DrawString(Font,
                                    TEXT_SCORE,
                                    new Vector2(300,
-                                               270),
+                                               230),
                                    Color.Red * opacity);
 
             spriteBatch.DrawString(Font,
                                    TEXT_LEVEL,
                                    new Vector2(300,
-                                               310),
+                                               290),
                                    Color.Red * opacity);
 
             spriteBatch.DrawInt64(Font,
                                   score,
                                   new Vector2(450,
-                                              270),
+                                              230),
                                   Color.Red * opacity);
 
             spriteBatch.DrawInt64(Font,
                                   level,
                                   new Vector2(450,
-                                              310),
+                                              290),
                                   Color.Red * opacity);
 
             spriteBatch.Draw(Texture,
-                             TitlePosition,
+                             TitleDestination,
                              TitleSource,
                              Color.White * opacity);
         }

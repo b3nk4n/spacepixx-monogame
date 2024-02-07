@@ -27,13 +27,6 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/Pericles18.spritefont
 
-#begin Fonts/Pericles26.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed
-/build:Fonts/Pericles26.spritefont
-
 #begin Sounds/angry.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
