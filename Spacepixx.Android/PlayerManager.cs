@@ -2,7 +2,6 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input.Touch;
-using Microsoft.Xna.Framework.Input;
 using System.IO;
 using Spacepixx.Inputs;
 using Microsoft.Phone.Applications.Common;
@@ -165,14 +164,19 @@ namespace Spacepixx
             AccelerometerHelper.Instance.ReadingChanged += new EventHandler<AccelerometerHelperReadingEventArgs>(OnAccelerometerHelperReadingChanged);
             AccelerometerHelper.Instance.Active = true;
 
-            leftSideScreen = new Rectangle(0,
+            // extends the input touch areas to the sides outside of the render screen,
+            // to take advantage of the blank space for input, and to make sure input
+            // is detected when the player touches slightly outside of the visible area
+            const int extendSides = 100;
+
+            leftSideScreen = new Rectangle(0 - extendSides,
                                            2 * screenBounds.Height / 3,
-                                           screenBounds.Width / 2,
+                                           screenBounds.Width / 2 + extendSides,
                                            screenBounds.Height / 3);
 
             rightSideScreen = new Rectangle(screenBounds.Width / 2,
                                            2 * screenBounds.Height / 3,
-                                           screenBounds.Width / 2,
+                                           screenBounds.Width / 2 + extendSides,
                                            screenBounds.Height / 3);
 
             middleScreen = new Rectangle(0,
@@ -180,13 +184,13 @@ namespace Spacepixx
                                               screenBounds.Width,
                                               screenBounds.Height / 3);
 
-            upperLeftScreen = new Rectangle(0, 0,
-                                            screenBounds.Width / 2,
+            upperLeftScreen = new Rectangle(0 - extendSides, 0,
+                                            screenBounds.Width / 2 + extendSides,
                                             screenBounds.Height / 4);
 
             upperRightScreen = new Rectangle(screenBounds.Width / 2,
                                              0,
-                                             screenBounds.Width / 2,
+                                             screenBounds.Width / 2 + extendSides,
                                              screenBounds.Height / 4);
 
             this.startLocation = startLocation;
@@ -215,8 +219,8 @@ namespace Spacepixx
             gameInput.AddTouchTapInput(ActionUpperLeft,
                                        upperLeftScreen,
                                        true);
-            gameInput.AddTouchTapInput(ActionUpperRight,
-                                       upperRightScreen,
+            gameInput.AddTouchTapInput(ActionUpperRight,  // FIXME !!!
+                                       upperRightScreen, // TODO take advantage of blank space left and right, and extend the touch area to outside of the viewport if that works!
                                        true);
 
             gameInput.AddTouchSlideInput(ActionSlideLeft,
