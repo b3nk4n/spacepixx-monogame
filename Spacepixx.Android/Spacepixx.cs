@@ -114,7 +114,13 @@ public class Spacepixx : Game, IBackButtonPressedCallback
 
     private bool backButtonPressed = false;
 
-    public Spacepixx()
+    public delegate void ShowLeaderboards();
+    private readonly ShowLeaderboards showLeaderboards;
+
+    public delegate void SubmitLeaderboardScore(long score);
+    private readonly SubmitLeaderboardScore submitLeaderboardScore;
+
+    public Spacepixx(ShowLeaderboards showLeaderboards, SubmitLeaderboardScore submitLeaderboardScore)
     {
         graphics = new GraphicsDeviceManager(this);
         graphics.PreparingDeviceSettings += new EventHandler<PreparingDeviceSettingsEventArgs>(graphics_PreparingDeviceSettings);
@@ -123,6 +129,9 @@ public class Spacepixx : Game, IBackButtonPressedCallback
 
         // Frame rate is 60 fps
         TargetElapsedTime = TimeSpan.FromTicks(166667);
+
+        this.showLeaderboards = showLeaderboards;
+        this.submitLeaderboardScore = submitLeaderboardScore;
     }
 
     void graphics_PreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
@@ -414,7 +423,7 @@ public class Spacepixx : Game, IBackButtonPressedCallback
                         break;
 
                     case MainMenuManager.MenuItems.Highscores:
-                        // TODO show GPGS leaderboards
+                        showLeaderboards();
                         break;
 
                     case MainMenuManager.MenuItems.Instructions:
@@ -477,6 +486,12 @@ public class Spacepixx : Game, IBackButtonPressedCallback
             case GameStates.Submittion:
 
                 updateBackground(gameTime);
+
+                if (!submissionManager.IsActive)
+                {
+                    // we just got into the submission state
+                    submitLeaderboardScore(playerManager.PlayerScore);
+                }
 
                 submissionManager.IsActive = true;
                 submissionManager.Update(gameTime);

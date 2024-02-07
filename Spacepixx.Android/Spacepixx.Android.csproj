@@ -6,12 +6,17 @@
     <ApplicationId>de.b3nk4n.spacepixx</ApplicationId>
     <ApplicationVersion>1</ApplicationVersion>
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-    <ApplicationTitle>SpacePIXX</ApplicationTitle>
+    <ApplicationTitle>SpacepiXX</ApplicationTitle>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
     <PackageReference Include="MonoGame.Framework.Android" Version="3.8.1.303" />
     <PackageReference Include="Xamarin.Essentials" Version="1.8.1" />
+    <PackageReference Include="Xamarin.GooglePlayServices.Base" Version="118.2.0.5" />
+    <PackageReference Include="Xamarin.GooglePlayServices.Basement" Version="118.2.0.5" />
+    <PackageReference Include="Xamarin.GooglePlayServices.Drive" Version="117.0.0.14" />
+    <PackageReference Include="Xamarin.GooglePlayServices.Games" Version="123.1.0.6" />
+    <PackageReference Include="Xamarin.GooglePlayServices.Tasks" Version="118.0.2.6" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Resources\Drawable\" />

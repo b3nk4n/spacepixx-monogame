@@ -2,8 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="de.b3nk4n.spacepixx" android:versionCode="1" android:versionName="1.0">
   <uses-sdk android:minSdkVersion="23" android:targetSdkVersion="33" />
   <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+  <uses-permission android:name="android.permission.VIBRATE" />
+  <uses-permission android:name="android.permission.INTERNET" />
   <application android:enableOnBackInvokedCallback="true" android:isGame="true" android:appCategory="game">
-    
+    <meta-data android:name="com.google.android.gms.games.APP_ID" android:value="@string/app_id" />
   </application>
 </manifest>
 
