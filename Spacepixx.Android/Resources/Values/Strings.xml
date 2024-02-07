@@ -2,6 +2,7 @@
 <resources>
   <string name="app_name">SpacepiXX</string>
   <string name="app_id">1094690648988</string>
+  <string name="ad_app_id" translatable="false">ca-app-pub-8102925760359189~7089189310</string>
 </resources>
 
 

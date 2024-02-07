@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input.Touch;
 using System.IO.IsolatedStorage;
 using System.IO;
 using Spacepixx.Inputs;
+using static Spacepixx.Spacepixx;
 
 namespace Spacepixx
 {
@@ -28,20 +29,27 @@ namespace Spacepixx
 
         private const string MUSIC_TITLE = "Music: ";
         private SoundValues musicValue = SoundValues.Low;
-        private readonly int musicPositionY = 190;
-        private readonly Rectangle musicDestination = new Rectangle(250, 185,
+        private readonly int musicPositionY = 170;
+        private readonly Rectangle musicDestination = new Rectangle(250, 165,
                                                                     300, 50);
 
         private const string SFX_TITLE = "SFX: ";
         private SoundValues sfxValue = SoundValues.High;
-        private readonly int sfxPositionY = 260;
-        private readonly Rectangle sfxDestination = new Rectangle(250, 255,
+        private readonly int sfxPositionY = 225;
+        private readonly Rectangle sfxDestination = new Rectangle(250, 220,
                                                                   300, 50);
 
         private const string VIBRATION_TITLE = "Vibration: ";
         private VibrationValues vibrationValue = VibrationValues.On;
-        private readonly int vibrationPositionY = 330;
-        private readonly Rectangle vibrationDestination = new Rectangle(250, 325,
+        private readonly int vibrationPositionY = 280;
+        private readonly Rectangle vibrationDestination = new Rectangle(250, 275,
+                                                                        300, 50);
+
+        private const string PRIVACY_TITLE = "Privacy: ";
+        private const string PRIVACY_VALUE = "Update";
+        private readonly int privacyPositionY = 335;
+        private bool privacyEnabled = false;
+        private readonly Rectangle privacyDestination = new Rectangle(250, 330,
                                                                         300, 50);
 
         private readonly Rectangle cancelSource = new Rectangle(0, 750,
@@ -62,6 +70,7 @@ namespace Spacepixx
         private const string MusicAction = "Music";
         private const string SfxAction = "SFX";
         private const string VibrationAction = "Vibration";
+        private const string PrivacyAction = "Privacy";
         private const string CancelAction = "Cancel";
 
         private const string ON = "ON";
@@ -102,6 +111,9 @@ namespace Spacepixx
             GameInput.AddTouchGestureInput(VibrationAction,
                                            GestureType.Tap,
                                            vibrationDestination);
+            GameInput.AddTouchGestureInput(PrivacyAction,
+                                           GestureType.Tap,
+                                           privacyDestination);
             GameInput.AddTouchGestureInput(CancelAction,
                                            GestureType.Tap,
                                            cancelDestination);
@@ -123,7 +135,8 @@ namespace Spacepixx
             return settingsManager;
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime, bool privacyOptionRequired,
+            ShowPrivacyConsent showPrivacyConsent)
         {
             if (isActive)
             {
@@ -131,7 +144,8 @@ namespace Spacepixx
                     this.opacity += OpacityChangeRate;
             }
 
-            handleTouchInputs();
+            privacyEnabled = privacyOptionRequired;
+            handleTouchInputs(privacyEnabled, showPrivacyConsent);
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -145,13 +159,19 @@ namespace Spacepixx
             drawSfx(spriteBatch);
             drawVibration(spriteBatch);
 
+            if (privacyEnabled)
+            {
+                drawPrivacy(spriteBatch);
+
+            }
+
             spriteBatch.Draw(texture,
                              cancelDestination,
                              cancelSource,
                              Color.White * opacity);
         }
 
-        private void handleTouchInputs()
+        private void handleTouchInputs(bool privacyEnabled, ShowPrivacyConsent showPrivacyConsent)
         {
             if (GameInput.IsPressed(MusicAction))
             {
@@ -164,6 +184,10 @@ namespace Spacepixx
             else if (GameInput.IsPressed(VibrationAction))
             {
                 toggleVibration();
+            }
+            else if (privacyEnabled && GameInput.IsPressed(PrivacyAction))
+            {
+                showPrivacyConsent();
             }
             else if (GameInput.IsPressed(CancelAction))
             {
@@ -349,6 +373,21 @@ namespace Spacepixx
                                    text,
                                    new Vector2((ValuePositionX - font.MeasureString(text).X),
                                                vibrationPositionY),
+                                   Color.Red * opacity);
+        }
+
+        private void drawPrivacy(SpriteBatch spriteBatch)
+        {
+            spriteBatch.DrawString(font,
+                                   PRIVACY_TITLE,
+                                   new Vector2(TextPositonX,
+                                               privacyPositionY),
+                                   Color.Red * opacity);
+
+            spriteBatch.DrawString(font,
+                                   PRIVACY_VALUE,
+                                   new Vector2((ValuePositionX - font.MeasureString(PRIVACY_VALUE).X),
+                                               privacyPositionY),
                                    Color.Red * opacity);
         }
 

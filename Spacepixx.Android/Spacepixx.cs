@@ -120,7 +120,22 @@ public class Spacepixx : Game, IBackButtonPressedCallback
     public delegate void SubmitLeaderboardScore(long score);
     private readonly SubmitLeaderboardScore submitLeaderboardScore;
 
-    public Spacepixx(ShowLeaderboards showLeaderboards, SubmitLeaderboardScore submitLeaderboardScore)
+    public delegate void StartNewGame();
+    private readonly StartNewGame startNewGameCallback;
+
+    public delegate void GameOverEnded();
+    private readonly GameOverEnded gameOverEndedCallback;
+
+    public delegate bool IsPrivacyConsentRequired();
+    private readonly IsPrivacyConsentRequired isPrivacyRequiredSupplier;
+
+    public delegate void ShowPrivacyConsent();
+    private readonly ShowPrivacyConsent showPrivacyConsentCallback;
+
+    public Spacepixx(
+        ShowLeaderboards showLeaderboards, SubmitLeaderboardScore submitLeaderboardScore,
+        StartNewGame startNewGame, GameOverEnded gameOverEnded,
+        IsPrivacyConsentRequired isPrivacyRequired, ShowPrivacyConsent showPrivacyConsent)
     {
         graphics = new GraphicsDeviceManager(this);
         graphics.PreparingDeviceSettings += new EventHandler<PreparingDeviceSettingsEventArgs>(graphics_PreparingDeviceSettings);
@@ -132,6 +147,10 @@ public class Spacepixx : Game, IBackButtonPressedCallback
 
         this.showLeaderboards = showLeaderboards;
         this.submitLeaderboardScore = submitLeaderboardScore;
+        this.startNewGameCallback = startNewGame;
+        this.gameOverEndedCallback = gameOverEnded;
+        this.isPrivacyRequiredSupplier = isPrivacyRequired;
+        this.showPrivacyConsentCallback = showPrivacyConsent;
     }
 
     void graphics_PreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
@@ -550,7 +569,7 @@ public class Spacepixx : Game, IBackButtonPressedCallback
                 updateBackground(gameTime);
 
                 settingsManager.IsActive = true;
-                settingsManager.Update(gameTime);
+                settingsManager.Update(gameTime, isPrivacyRequiredSupplier(), showPrivacyConsentCallback);
 
                 if (settingsManager.CancelClicked || backButtonPressed)
                 {
@@ -803,6 +822,8 @@ public class Spacepixx : Game, IBackButtonPressedCallback
                     {
                         gameState = GameStates.MainMenu;
                     }
+
+                    gameOverEndedCallback();
                 }
 
                 if (backButtonPressed)
@@ -1037,6 +1058,8 @@ public class Spacepixx : Game, IBackButtonPressedCallback
 
         bossDirectKill = true;
         bossBonusScore = InitialBossBonusScore;
+
+        startNewGameCallback();
 
         GC.Collect();
     }
