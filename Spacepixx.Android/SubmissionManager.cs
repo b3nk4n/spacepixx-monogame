@@ -44,7 +44,6 @@ namespace Spacepixx
         private bool cancelClicked = false;
         private bool retryClicked = false;
 
-
         private const string TEXT_SCORE = "Score:";
         private const string TEXT_LEVEL = "Level:";
 
@@ -119,6 +118,11 @@ namespace Spacepixx
             spriteBatch.Draw(Texture,
                                  cancelDestination,
                                  cancelSource,
+                                 Color.Red * opacity);
+
+            spriteBatch.Draw(Texture,
+                                 retryDestination,
+                                 retrySource,
                                  Color.Red * opacity);
 
             spriteBatch.DrawString(Font,
